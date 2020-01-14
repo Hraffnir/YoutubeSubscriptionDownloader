@@ -11,7 +11,7 @@ namespace VideoSubscriptionsSaver.Actors
     {
         public HttpDownloaderActor()
         {
-            Receive<HttpDownloaderMessages.DownloadVideo>(Message => DownloadVideo(Message.Url, Message.Channel, Message.Title, Message.DownloadsDirectory));
+            Receive<HttpDownloaderMessages.DownloadVideo>(message => DownloadVideo(message.Url, message.Channel, message.Title, message.DownloadsDirectory));
         }
 
         private void DownloadVideo(string url, string channel, string title, string downloadsDirectory)

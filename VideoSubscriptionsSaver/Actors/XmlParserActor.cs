@@ -1,10 +1,8 @@
 ﻿using Akka.Actor;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using VideoSubscriptionsSaver.Extensions;
@@ -19,7 +17,7 @@ namespace VideoSubscriptionsSaver.Actors
 
         public XmlParserActor()
         {
-            Receive<XmlParserMessages.GetChannels>(Message => GetChannels(Message.Files));
+            Receive<XmlParserMessages.GetChannels>(message => GetChannels(message.Files));
         }
 
         private void GetChannels(List<string> files)
