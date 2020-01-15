@@ -36,14 +36,18 @@ namespace VideoSubscriptionsSaver
 
             var numberOfDownloaders = short.Parse(config["akka:concurrentVideoDownloaders"]);
             var downloaderProps = Props.Create<HttpDownloaderActor>().WithRouter(new RoundRobinPool(numberOfDownloaders));
-
             var httpDownloader = _actorSystem.ActorOf(downloaderProps, "httpDownloaders");
 
             var xmlParser = _actorSystem.ActorOf(Props.Create(() => new XmlParserActor()), "xmlParser");
 
-            var channelsTracker = _actorSystem.ActorOf(Props.Create(() => 
-                new ChannelsTrackerActor(xmlParser.Path.ToString(), httpDownloader.Path.ToString(), config["downloadDir"], config["subscriptionsDir"])), 
-                "channelsTracker");
+            var numberOfChannelTrackers = short.Parse(config["akka:concurrentChannelTrackers"]);
+            var channelsTrackerProps = Props
+                .Create<ChannelsTrackerActor>(xmlParser.Path.ToString(), 
+                                                httpDownloader.Path.ToString(), 
+                                                config["downloadDir"], 
+                                                config["subscriptionsDir"])
+                .WithRouter(new RoundRobinPool(numberOfChannelTrackers));
+            var channelsTracker = _actorSystem.ActorOf(channelsTrackerProps, "channelsTrackers");
 
             _actorSystem
                 .Scheduler

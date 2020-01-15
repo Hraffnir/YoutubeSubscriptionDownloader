@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using Akka.Actor;
 using VideoSubscriptionsSaver.Messages;
@@ -25,7 +26,7 @@ namespace VideoSubscriptionsSaver.Actors
 
         private void CheckChannels()
         {
-            var subscriptionsDirectory = new DirectoryInfo(_subscriptionsFolder); // TODO: Config value for this..
+            var subscriptionsDirectory = new DirectoryInfo(_subscriptionsFolder);
             var files = subscriptionsDirectory.GetFiles().Select(f => f.FullName).ToList();
             var message = new XmlParserMessages.GetChannels(files);
             Context.ActorSelection(_xmlParserActorPath).Tell(message);
@@ -35,8 +36,8 @@ namespace VideoSubscriptionsSaver.Actors
         {
             var downloadDir = new DirectoryInfo(_downloadFolder);
             var channelDir = downloadDir.CreateSubdirectory(videoInfo.Feed.Name);
-            
-            var videos = channelDir.GetFiles().Select(f => f.Name);
+
+            var videos = channelDir.GetFiles().Select(f => f.Name.Substring(0, f.Name.Length - 4));
             var missingVideos = videoInfo.Feed.Entries.Where(v => !videos.Contains(v.Title));
 
             foreach (var item in missingVideos)
